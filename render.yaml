@@ -1,8 +1,14 @@
 services:
+  # This defines your Spring Boot backend service
   - type: web
     name: fair-rice-portal
-    env: java
+    # This key explicitly tells Render to use a Java environment for building
+    runtime: java
+    # This tells Render that your backend code is inside the 'backend' folder
     rootDir: ./backend
+    # Specifies the free plan for this service
     plan: free
+    # The command to build your Spring Boot application
     buildCommand: "./mvnw clean package -DskipTests"
+    # The command to run your application after it's built
     startCommand: "java -jar target/*.jar"
