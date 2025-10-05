@@ -1,7 +1,7 @@
 services:
   - type: web
     name: fair-rice-portal
-    runtime: java
+    env: java
     rootDir: ./backend
     plan: free
     buildCommand: "./mvnw clean package -DskipTests"
