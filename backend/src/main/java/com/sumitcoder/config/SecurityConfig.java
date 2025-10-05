@@ -38,7 +38,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -50,7 +51,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        
+
                         // Define all public-facing endpoints here
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/records/public").permitAll()
@@ -60,12 +61,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/families/public/by-contact/**").permitAll()
                         .requestMatchers("/api/chatbot/public/ask").permitAll()
                         .requestMatchers("/api/admin/forgot-password").permitAll() // <-- ADD THIS LINE
-                        .requestMatchers("/api/admin/reset-password").permitAll()  // <-- ADD THIS LINE
+                        .requestMatchers("/api/admin/reset-password").permitAll() // <-- ADD THIS LINE
                         .requestMatchers("/uploads/**").permitAll()
-                        
+
                         // All other requests require authentication
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -74,7 +74,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedOrigins(Arrays.asList(
+                "http://localhost:3000",
+                "https://*.netlify.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
@@ -83,4 +85,3 @@ public class SecurityConfig {
         return source;
     }
 }
-
