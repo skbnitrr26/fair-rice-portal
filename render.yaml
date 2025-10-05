@@ -1,25 +1,8 @@
 services:
   - type: web
     name: fair-rice-portal
-    # THE FIX IS HERE: The correct key is 'runtime', not 'env'
     runtime: java
-    # IMPORTANT: Ensure this matches the name of your backend folder in GitHub
     rootDir: ./backend
     plan: free
     buildCommand: "./mvnw clean package -DskipTests"
     startCommand: "java -jar target/*.jar"
-    # Note: Your secret environment variables (DB_URL, etc.)
-    # will be automatically linked from the Render dashboard.
-    # You do not need to add them here.
-```
-
-### Your Next Steps
-
-1.  **Update the File:** Replace the content of the `render.yaml` file on your local computer with the corrected code above.
-2.  **Commit and Push:** Save the change and push it to your GitHub repository.
-    ```bash
-    git add render.yaml
-    git commit -m "Fix: Correct runtime key in render.yaml"
-    git push
-    
-
