@@ -2,13 +2,13 @@ services:
   # This defines your Spring Boot backend service
   - type: web
     name: fair-rice-portal
-    # This key explicitly tells Render to use a Java environment for building
-    runtime: java
-    # This tells Render that your backend code is inside the 'backend' folder
+    # THE FIX: Tell Render to use Docker for the environment
+    runtime: docker
+    # The root directory is still the 'backend' folder
     rootDir: ./backend
+    # The path to the Dockerfile within the rootDir
+    dockerfilePath: ./Dockerfile
     # Specifies the free plan for this service
     plan: free
-    # The command to build your Spring Boot application
-    buildCommand: "./mvnw clean package -DskipTests"
-    # The command to run your application after it's built
-    startCommand: "java -jar target/*.jar"
+    # Note: buildCommand and startCommand are no longer needed
+    # because they are now defined inside the Dockerfile.
