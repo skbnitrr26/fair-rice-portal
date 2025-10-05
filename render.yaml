@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: rice-distribution-backend
+    # This explicitly tells Render to use a Java environment
+    env: java
+    # IMPORTANT: Ensure this matches the name of your backend folder in GitHub
+    rootDir: backend
+    plan: free
+    buildCommand: "./mvnw clean package -DskipTests"
+    startCommand: "java -jar target/*.jar"
+    # Note: Your secret environment variables (DB_URL, etc.)
+    # will be automatically linked from the Render dashboard.
+    # You do not need to add them here.
+```
+
+*(**Important:** In the file above, I have used `rootDir: backend`. If your backend folder in GitHub is still named `rice-distribution-system`, please change `backend` to `rice-distribution-system` in the `render.yaml` file.)*
+
+**Step 3: Push the New File to GitHub**
+
+Now, commit and push this new configuration file to your GitHub repository.
+
+1.  **Stage the change:**
+    ```bash
+    git add render.yaml
+    ```
+2.  **Commit the change:**
+    ```bash
+    git commit -m "Add Render configuration file to specify Java environment"
+    ```
+3.  **Push to GitHub:**
+    ```bash
+    git push
+    
