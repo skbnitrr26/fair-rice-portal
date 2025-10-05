@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: rice-distribution-backend
+    name: fair-rice-portal
     # This explicitly tells Render to use a Java environment
     env: java
     # IMPORTANT: Ensure this matches the name of your backend folder in GitHub
