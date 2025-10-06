@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import InputField from '../shared/InputField.jsx';
+import InputField from '../shared/InputField';
+import { API_BASE_URL } from '../../config'; // Import the central URL
 
 export default function ForgotPassword({ onBackToLogin }) {
     const { t } = useTranslation();
@@ -16,21 +17,23 @@ export default function ForgotPassword({ onBackToLogin }) {
         setError('');
 
         try {
-            const response = await fetch('/api/admin/forgot-password', {
+            // UPDATED: Using the live API URL
+            const response = await fetch(`${API_BASE_URL}/api/admin/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username })
             });
 
             if (!response.ok) {
-                throw new Error('User not found or error occurred.');
+                // For security, don't confirm if the user exists or not.
+                throw new Error('An error occurred.');
             }
             
             setMessage(t('tokenGeneratedMessage'));
 
         } catch (err) {
-            // We show a generic message for security reasons
-            setError('If a user with that username exists, a token has been generated.');
+            // We show a generic success message even on error to prevent user enumeration attacks
+            setMessage(t('tokenGeneratedMessage'));
         } finally {
             setIsLoading(false);
         }

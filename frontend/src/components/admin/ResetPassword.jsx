@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import InputField from '../shared/InputField.jsx';
+import InputField from '../shared/InputField';
+import { API_BASE_URL } from '../../config';
 
 export default function ResetPassword({ onBackToLogin }) {
     const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function ResetPassword({ onBackToLogin }) {
         }
 
         try {
-            const response = await fetch('/api/admin/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
