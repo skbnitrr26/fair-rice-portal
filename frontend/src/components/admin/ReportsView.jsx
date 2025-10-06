@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DashboardReports from './DashboardReports';
-import FamilyHistoryModal from './FamilyHistoryModal';
-import { Th, Td } from '../shared/TableComponents';
-import PaginationControls from '../shared/PaginationControls';
-import { API_BASE_URL } from '../../config';
+import DashboardReports from './DashboardReports.jsx';
+import FamilyHistoryModal from './FamilyHistoryModal.jsx';
+import { Th, Td } from '../shared/TableComponents.jsx';
+import PaginationControls from '../shared/PaginationControls.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function ReportsView({ token, onLogout }) {
     const { t } = useTranslation();
@@ -60,9 +60,15 @@ export default function ReportsView({ token, onLogout }) {
 
     const filteredRecords = useMemo(() => {
         const records = pageData.content || [];
+        // The search now also checks the uniqueFamilyId
         if (!searchTerm.trim()) return records;
         const lowerSearch = searchTerm.toLowerCase();
-        return records.filter(r => r?.family && (r.family.familyHeadName.toLowerCase().includes(lowerSearch) || r.family.contactNumber.includes(searchTerm) || r.family.villageName.toLowerCase().includes(lowerSearch)));
+        return records.filter(r => r?.family && (
+            r.family.familyHeadName.toLowerCase().includes(lowerSearch) || 
+            r.family.contactNumber.includes(searchTerm) || 
+            r.family.villageName.toLowerCase().includes(lowerSearch) ||
+            (r.family.uniqueFamilyId && r.family.uniqueFamilyId.toLowerCase().includes(lowerSearch))
+        ));
     }, [pageData, searchTerm]);
 
     const handleDownloadCSV = () => {
@@ -94,20 +100,6 @@ export default function ReportsView({ token, onLogout }) {
         { value: 7, name: 'July' }, { value: 8, name: 'August' }, { value: 9, name: 'September' },
         { value: 10, name: 'October' }, { value: 11, name: 'November' }, { value: 12, name: 'December' }
     ];
-    
-    const handleGetQrCode = async (familyId) => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/families/admin/${familyId}/qrcode`, {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (!response.ok) { throw new Error('Could not fetch QR code.'); }
-            const imageBlob = await response.blob();
-            const imageUrl = URL.createObjectURL(imageBlob);
-            window.open(imageUrl, '_blank');
-        } catch (err) {
-            setError(err.message);
-        }
-    };
 
     return (
         <div className="space-y-8">
@@ -149,18 +141,10 @@ export default function ReportsView({ token, onLogout }) {
                                             <Td>{r.family?.familyHeadName}</Td>
                                             <Td>{r.family?.contactNumber}</Td>
                                             <Td>{r.family?.villageName}</Td>
-                                            <Td className="space-x-2">
+                                            <Td>
                                                 <button onClick={() => setHistoryModalFamily(r.family)} className="bg-blue-600 text-white text-xs py-1 px-3 rounded hover:bg-blue-700">
                                                     {t('viewHistory')}
                                                 </button>
-                                                {r.family?.id && (
-                                                    <button 
-                                                        onClick={() => handleGetQrCode(r.family.id)}
-                                                        className="bg-gray-600 text-white text-xs py-1 px-3 rounded hover:bg-gray-700"
-                                                    >
-                                                        Get QR Code
-                                                    </button>
-                                                )}
                                             </Td>
                                         </tr>
                                     ))}
