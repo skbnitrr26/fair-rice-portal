@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DashboardReports from './DashboardReports.jsx';
-import FamilyHistoryModal from './FamilyHistoryModal.jsx';
-import { Th, Td } from '../shared/TableComponents.jsx';
-import PaginationControls from '../shared/PaginationControls.jsx';
-import { API_BASE_URL } from '../../config.js';
+import DashboardReports from './DashboardReports';
+import FamilyHistoryModal from './FamilyHistoryModal';
+import { Th, Td } from '../shared/TableComponents';
+import PaginationControls from '../shared/PaginationControls';
+import { API_BASE_URL } from '../../config';
 
 export default function ReportsView({ token, onLogout }) {
     const { t } = useTranslation();
@@ -55,7 +55,6 @@ export default function ReportsView({ token, onLogout }) {
         const totalDistributed = records.reduce((sum, r) => sum + parseFloat(r.riceReceivedKg || 0), 0);
         const totalDeficit = records.reduce((sum, r) => sum + parseFloat(r.deficitKg || 0), 0);
         const chartData = [{ name: t('chartTitle'), 'Total Entitlement': totalEntitlement.toFixed(2), 'Total Distributed': totalDistributed.toFixed(2), }];
-        // Use totalElements from pageData for an accurate total count
         return { totalRecords: pageData.totalElements, totalDistributed: totalDistributed.toFixed(2), totalDeficit: totalDeficit.toFixed(2), uniqueFamilies: new Set(records.map(r => r.family?.contactNumber)).size, chartData };
     }, [pageData, t]);
 
@@ -95,7 +94,7 @@ export default function ReportsView({ token, onLogout }) {
         { value: 7, name: 'July' }, { value: 8, name: 'August' }, { value: 9, name: 'September' },
         { value: 10, name: 'October' }, { value: 11, name: 'November' }, { value: 12, name: 'December' }
     ];
-
+    
     const handleGetQrCode = async (familyId) => {
         try {
             const response = await fetch(`${API_BASE_URL}/api/families/admin/${familyId}/qrcode`, {
