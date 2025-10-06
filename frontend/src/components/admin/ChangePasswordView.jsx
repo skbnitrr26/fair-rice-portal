@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InputField from '../shared/InputField.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function ChangePasswordView({ token }) {
     const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function ChangePasswordView({ token }) {
         }
 
         try {
-            const response = await fetch('/api/admin/change-password', {
+            const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

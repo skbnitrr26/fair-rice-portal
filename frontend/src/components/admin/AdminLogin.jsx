@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import InputField from '../shared/InputField.jsx';
 import ForgotPassword from './ForgotPassword.jsx';
 import ResetPassword from './ResetPassword.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function AdminLogin({ onLogin }) {
     const { t } = useTranslation();
@@ -17,7 +18,7 @@ export default function AdminLogin({ onLogin }) {
         setIsLoading(true);
         setError('');
         try {
-            const res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
+            const res = await fetch(`${API_BASE_URL}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
             if (!res.ok) { throw new Error('Invalid credentials.'); }
             onLogin((await res.json()).token);
         } catch (err) { setError(err.message); } 
@@ -52,7 +53,7 @@ export default function AdminLogin({ onLogin }) {
 
             <div className="text-center mt-4">
                 <button type="button" onClick={() => setLoginView('reset')} className="text-sm text-gray-600 hover:underline">
-                    Have a reset token?
+                    {t('haveResetToken', 'Have a reset token?')}
                 </button>
             </div>
 

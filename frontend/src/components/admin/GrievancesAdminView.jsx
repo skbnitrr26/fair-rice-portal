@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import PaginationControls from '../shared/PaginationControls.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 // A separate component for the comment form to keep the logic clean
 const CommentForm = ({ grievanceId, token, onCommentPosted }) => {
@@ -13,7 +14,7 @@ const CommentForm = ({ grievanceId, token, onCommentPosted }) => {
         if (!content.trim()) return;
         setIsSubmitting(true);
         try {
-            const res = await fetch(`/api/grievances/admin/${grievanceId}/comments`, {
+            const res = await fetch(`${API_BASE_URL}/api/grievances/admin/${grievanceId}/comments`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ export default function GrievancesAdminView({ token }) {
     const fetchGrievances = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch(`/api/grievances/admin?page=${currentPage}&size=5`, { headers: { 'Authorization': `Bearer ${token}` } });
+            const res = await fetch(`${API_BASE_URL}/api/grievances/admin?page=${currentPage}&size=5`, { headers: { 'Authorization': `Bearer ${token}` } });
             if (!res.ok) throw new Error('Failed to fetch grievances.');
             const data = await res.json();
             setPageData({ content: data.content, totalPages: data.totalPages });
@@ -85,7 +86,7 @@ export default function GrievancesAdminView({ token }) {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const res = await fetch(`/api/grievances/admin/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: newStatus }) });
+            const res = await fetch(`${API_BASE_URL}/api/grievances/admin/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ status: newStatus }) });
             if (!res.ok) throw new Error('Failed to update status.');
             fetchGrievances();
         } catch (err) { setError(err.message); }

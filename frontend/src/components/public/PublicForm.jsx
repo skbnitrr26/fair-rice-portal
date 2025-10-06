@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import InputField from '../shared/InputField';
+import { API_BASE_URL } from '../../config'; // Import the central URL
 
 const RICE_PER_PERSON_KG = 5;
 
@@ -58,7 +59,7 @@ const SubmissionSummary = ({ result, onClose }) => {
                         valueClass={parseFloat(result.deficitKg) > 0 ? 'text-red-600' : 'text-green-600'}
                     />
                     <hr className="my-4"/>
-                    <SummaryRow label={t('recordId')} value={result.uniqueFamilyId} />
+                    <SummaryRow label={t('recordId')} value={result.family.uniqueFamilyId} />
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 mt-8 no-print">
@@ -115,7 +116,7 @@ export default function PublicForm() {
                 setIsFetchingFamily(true);
                 setError('');
                 try {
-                    const res = await fetch(`/api/families/public/by-contact/${contactNumber}`);
+                    const res = await fetch(`${API_BASE_URL}/api/families/public/by-contact/${contactNumber}`);
                     if (!res.ok) { 
                         setFormData(prev => ({ ...prev, familyHeadName: '', numMembers: '', villageName: '' }));
                         return; 
@@ -145,7 +146,7 @@ export default function PublicForm() {
         setSubmissionResult(null);
         setError('');
         try {
-            const res = await fetch('/api/records/public', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+            const res = await fetch(`${API_BASE_URL}/api/records/public`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
             if (!res.ok) { throw new Error((await res.json()).message || 'Submission error.'); }
             const result = await res.json();
             setSubmissionResult(result);

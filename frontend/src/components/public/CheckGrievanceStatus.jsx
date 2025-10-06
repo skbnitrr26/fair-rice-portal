@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InputField from '../shared/InputField.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function CheckGrievanceStatus() {
     const { t, i18n } = useTranslation();
@@ -16,7 +17,7 @@ export default function CheckGrievanceStatus() {
         setError('');
         setGrievance(null);
         try {
-            const response = await fetch(`/api/grievances/public/status/${trackingId}`);
+            const response = await fetch(`${API_BASE_URL}/api/grievances/public/status/${trackingId}`);
             if (!response.ok) throw new Error('Tracking ID not found.');
             setGrievance(await response.json());
         } catch (err) {

@@ -7,6 +7,7 @@ import CheckGrievanceStatus from './CheckGrievanceStatus.jsx';
 import Chatbot from './Chatbot.jsx';
 import ActionCard from './ActionCard.jsx';
 import HowItWorks from './HowItWorks.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 // A reusable Modal component to house the forms and other pop-ups
 const Modal = ({ children, onClose }) => (
@@ -30,6 +31,7 @@ export default function PublicView() {
     const { t } = useTranslation();
     const [announcements, setAnnouncements] = useState([]);
     
+    // State to control visibility of each modal individually
     const [showHowItWorks, setShowHowItWorks] = useState(false);
     const [showSubmitModal, setShowSubmitModal] = useState(false);
     const [showGrievanceModal, setShowGrievanceModal] = useState(false);
@@ -38,13 +40,10 @@ export default function PublicView() {
     useEffect(() => {
         const fetchAnnouncements = async () => {
             try {
-                const response = await fetch('/api/announcements/public');
-                if (response.ok) {
-                    const data = await response.json();
-                    setAnnouncements(data.content); 
-                }
+                const response = await fetch(`${API_BASE_URL}/api/announcements/public`);
+                if (response.ok) setAnnouncements((await response.json()).content);
             } catch (error) { 
-                console.error("Fetch announcements error:", error); 
+                console.error("Fetch announcements error:", error);
                 setAnnouncements([]);
             }
         };
@@ -53,6 +52,7 @@ export default function PublicView() {
 
     return (
         <div className="space-y-12">
+            {/* All pop-up modals are defined here, ready to be triggered */}
             {showHowItWorks && (
                 <Modal onClose={() => setShowHowItWorks(false)}>
                     <HowItWorks />

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import DashboardReports from './DashboardReports';
-import FamilyHistoryModal from './FamilyHistoryModal';
-import { Th, Td } from '../shared/TableComponents';
-import PaginationControls from '../shared/PaginationControls';
+import DashboardReports from './DashboardReports.jsx';
+import FamilyHistoryModal from './FamilyHistoryModal.jsx';
+import { Th, Td } from '../shared/TableComponents.jsx';
+import PaginationControls from '../shared/PaginationControls.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function ReportsView({ token, onLogout }) {
     const { t } = useTranslation();
-    const [pageData, setPageData] = useState({ content: [], totalPages: 0 });
+    const [pageData, setPageData] = useState({ content: [], totalPages: 0, totalElements: 0 });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,7 +30,7 @@ export default function ReportsView({ token, onLogout }) {
             if (selectedYear !== 'all') params.append('year', selectedYear);
             if (selectedMonth !== 'all' && selectedYear !== 'all') params.append('month', selectedMonth);
             
-            const url = `/api/records?${params.toString()}`;
+            const url = `${API_BASE_URL}/api/records?${params.toString()}`;
 
             try {
                 const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -37,7 +38,7 @@ export default function ReportsView({ token, onLogout }) {
                 if (!res.ok) { throw new Error('Failed to fetch records.'); }
                 const data = await res.json();
                 
-                setPageData({ content: data.content, totalPages: data.totalPages });
+                setPageData({ content: data.content, totalPages: data.totalPages, totalElements: data.totalElements });
             } catch (err) { setError(err.message); } 
             finally { setIsLoading(false); }
         };
@@ -46,7 +47,7 @@ export default function ReportsView({ token, onLogout }) {
 
     useEffect(() => {
         setCurrentPage(0);
-    }, [selectedYear, selectedMonth]);
+    }, [selectedYear, selectedMonth, searchTerm]);
 
     const reportData = useMemo(() => {
         const records = pageData.content || [];
@@ -54,7 +55,8 @@ export default function ReportsView({ token, onLogout }) {
         const totalDistributed = records.reduce((sum, r) => sum + parseFloat(r.riceReceivedKg || 0), 0);
         const totalDeficit = records.reduce((sum, r) => sum + parseFloat(r.deficitKg || 0), 0);
         const chartData = [{ name: t('chartTitle'), 'Total Entitlement': totalEntitlement.toFixed(2), 'Total Distributed': totalDistributed.toFixed(2), }];
-        return { totalRecords: pageData.content.length, totalDistributed: totalDistributed.toFixed(2), totalDeficit: totalDeficit.toFixed(2), uniqueFamilies: new Set(records.map(r => r.family?.contactNumber)).size, chartData };
+        // Use totalElements from pageData for an accurate total count
+        return { totalRecords: pageData.totalElements, totalDistributed: totalDistributed.toFixed(2), totalDeficit: totalDeficit.toFixed(2), uniqueFamilies: new Set(records.map(r => r.family?.contactNumber)).size, chartData };
     }, [pageData, t]);
 
     const filteredRecords = useMemo(() => {
@@ -93,6 +95,20 @@ export default function ReportsView({ token, onLogout }) {
         { value: 7, name: 'July' }, { value: 8, name: 'August' }, { value: 9, name: 'September' },
         { value: 10, name: 'October' }, { value: 11, name: 'November' }, { value: 12, name: 'December' }
     ];
+
+    const handleGetQrCode = async (familyId) => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/families/admin/${familyId}/qrcode`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) { throw new Error('Could not fetch QR code.'); }
+            const imageBlob = await response.blob();
+            const imageUrl = URL.createObjectURL(imageBlob);
+            window.open(imageUrl, '_blank');
+        } catch (err) {
+            setError(err.message);
+        }
+    };
 
     return (
         <div className="space-y-8">
@@ -134,10 +150,18 @@ export default function ReportsView({ token, onLogout }) {
                                             <Td>{r.family?.familyHeadName}</Td>
                                             <Td>{r.family?.contactNumber}</Td>
                                             <Td>{r.family?.villageName}</Td>
-                                            <Td>
+                                            <Td className="space-x-2">
                                                 <button onClick={() => setHistoryModalFamily(r.family)} className="bg-blue-600 text-white text-xs py-1 px-3 rounded hover:bg-blue-700">
                                                     {t('viewHistory')}
                                                 </button>
+                                                {r.family?.id && (
+                                                    <button 
+                                                        onClick={() => handleGetQrCode(r.family.id)}
+                                                        className="bg-gray-600 text-white text-xs py-1 px-3 rounded hover:bg-gray-700"
+                                                    >
+                                                        Get QR Code
+                                                    </button>
+                                                )}
                                             </Td>
                                         </tr>
                                     ))}

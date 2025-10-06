@@ -131,5 +131,14 @@
     "submitAnotherBtn": "एक और रिकॉर्ड जमा करें",
     "officialEntitlement": "आधिकारिक हक़",
     "deficitAmount": "कमी की मात्रा",
-    "recordId": "रिकॉर्ड आईडी"
+    "recordId": "रिकॉर्ड आईडी",
+    "chatAssistant": "चैट सहायक",
+    "askQuestion": "एक सवाल पूछें...",
+    "sendBtn": "भेजें",
+    "botTyping": "बॉट टाइप कर रहा है...",
+    "initialBotGreeting": "नमस्ते! मैं आपकी क्या मदद कर सकता हूँ?",
+    "historyFor": "{{name}} का इतिहास",
+    "loadingHistory": "इतिहास लोड हो रहा है...",
+    "noHistoryFound": "इस परिवार के लिए कोई इतिहास नहीं मिला।",
+    "chatError": "क्षमा करें, कुछ ग़लत हो गया। कृपया पुनः प्रयास करें।"
 }

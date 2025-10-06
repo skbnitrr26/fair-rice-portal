@@ -124,6 +124,15 @@
     "submitAnotherBtn": "Submit Another Record",
     "officialEntitlement": "Official Entitlement",
     "deficitAmount": "Deficit Amount",
-    "recordId": "Record ID"
+    "recordId": "Record ID",
+    "chatAssistant": "Chat Assistant",
+"askQuestion": "Ask a question...",
+"sendBtn": "Send",
+"botTyping": "Bot is typing...",
+"initialBotGreeting": "Hi! How can I help you today?",
+"chatError": "Sorry, something went wrong. Please try again.",
+    "historyFor": "History for {{name}}",
+    "loadingHistory": "Loading history...",
+    "noHistoryFound": "No history found for this family."
 }
 

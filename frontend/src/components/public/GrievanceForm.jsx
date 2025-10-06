@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import InputField from '../shared/InputField.jsx';
+import InputField from '../shared/InputField';
+import { API_BASE_URL } from '../../config'; // Import the central URL
 
 export default function GrievanceForm() {
     const { t } = useTranslation();
@@ -29,7 +30,7 @@ export default function GrievanceForm() {
         }
         
         try {
-            const response = await fetch('/api/grievances/public', { method: 'POST', body: submissionData });
+            const response = await fetch(`${API_BASE_URL}/api/grievances/public`, { method: 'POST', body: submissionData });
             if (!response.ok) throw new Error('Failed to submit grievance.');
             const result = await response.json();
             setMessage(
@@ -58,7 +59,7 @@ export default function GrievanceForm() {
                     <textarea id="content" name="content" value={formData.content} onChange={handleTextChange} rows="5" required className="w-full p-3 border rounded-lg" />
                 </div>
                  <div>
-                     <label htmlFor="imageFile" className="block text-sm font-medium text-gray-700 mb-1">{t('attachedEvidence')} </label>
+                     <label htmlFor="imageFile" className="block text-sm font-medium text-gray-700 mb-1">{t('attachedEvidence')} (Optional)</label>
                      <input id="imageFile" name="imageFile" type="file" accept="image/*" onChange={handleFileChange} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
                 </div>
                 <InputField label={t('optionalContact')} name="contactInfo" value={formData.contactInfo} onChange={handleTextChange} isRequired={false} />

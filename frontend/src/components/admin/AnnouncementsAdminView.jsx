@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import InputField from '../shared/InputField.jsx';
 import PaginationControls from '../shared/PaginationControls.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 export default function AnnouncementsAdminView({ token }) {
     const { t, i18n } = useTranslation();
@@ -17,7 +18,7 @@ export default function AnnouncementsAdminView({ token }) {
     const fetchAnnouncements = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`/api/announcements/public?page=${currentPage}&size=5`);
+            const response = await fetch(`${API_BASE_URL}/api/announcements/public?page=${currentPage}&size=5`);
             if (!response.ok) throw new Error('Could not fetch announcements.');
             const data = await response.json();
             setPageData({ content: data.content, totalPages: data.totalPages });
@@ -36,7 +37,7 @@ export default function AnnouncementsAdminView({ token }) {
     const handleDeleteClick = async (id) => {
         if (window.confirm('Are you sure you want to delete this announcement?')) {
             try {
-                const res = await fetch(`/api/announcements/admin/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                const res = await fetch(`${API_BASE_URL}/api/announcements/admin/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
                 if (!res.ok) throw new Error('Failed to delete.');
                 setMessage('Announcement deleted successfully.');
                 setCurrentPage(0);
@@ -50,7 +51,7 @@ export default function AnnouncementsAdminView({ token }) {
         setIsLoading(true);
         setMessage('');
         setError('');
-        const url = isEditing ? `/api/announcements/admin/${isEditing}` : '/api/announcements/admin';
+        const url = isEditing ? `${API_BASE_URL}/api/announcements/admin/${isEditing}` : `${API_BASE_URL}/api/announcements/admin`;
         const method = isEditing ? 'PUT' : 'POST';
         try {
             const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ title, content }) });
