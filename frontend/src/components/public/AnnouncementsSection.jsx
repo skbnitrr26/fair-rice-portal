@@ -17,7 +17,7 @@ export default function AnnouncementsSection({ announcements }) {
 
     return (
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">📢 {t('announcementsTitle')}</h2>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center"> {t('announcementsTitle')}</h2>
             {announcements.length === 0 && <p className="text-center text-gray-500">{t('noAnnouncements')}</p>}
             <div className="space-y-4">
                 {announcements.map(ann => (
