@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import PaginationControls from '../shared/PaginationControls.jsx';
-import { API_BASE_URL } from '../../config.js';
+import PaginationControls from '../shared/PaginationControls';
+import { API_BASE_URL } from '../../config';
 
 // A separate component for the comment form to keep the logic clean
 const CommentForm = ({ grievanceId, token, onCommentPosted }) => {
@@ -76,6 +76,7 @@ export default function GrievancesAdminView({ token }) {
 
     useEffect(() => {
         fetchGrievances();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, currentPage]);
 
     // Reset to page 0 whenever the filter changes
@@ -105,6 +106,7 @@ export default function GrievancesAdminView({ token }) {
     };
 
     const filteredGrievances = useMemo(() => {
+        // Filtering is now handled by the state `filter`, but data comes from pageData.content
         const grievances = pageData.content || [];
         if (filter === 'Active') {
             return grievances.filter(g => g.status === 'New' || g.status === 'In Progress');

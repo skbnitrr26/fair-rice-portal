@@ -28,6 +28,7 @@ export default function AnnouncementsAdminView({ token }) {
 
     useEffect(() => {
         fetchAnnouncements();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token, currentPage]);
 
     const resetForm = () => { setTitle(''); setContent(''); setIsEditing(null); setMessage(''); setError(''); };
@@ -41,7 +42,6 @@ export default function AnnouncementsAdminView({ token }) {
                 if (!res.ok) throw new Error('Failed to delete.');
                 setMessage('Announcement deleted successfully.');
                 setCurrentPage(0);
-                fetchAnnouncements();
             } catch (err) { setError(err.message); }
         }
     };
@@ -59,7 +59,6 @@ export default function AnnouncementsAdminView({ token }) {
             setMessage(`Announcement ${isEditing ? 'updated' : 'posted'} successfully!`);
             resetForm();
             setCurrentPage(0);
-            fetchAnnouncements();
         } catch (err) { setError(err.message); } 
         finally { setIsLoading(false); }
     };
