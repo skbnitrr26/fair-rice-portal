@@ -60,8 +60,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/grievances/public/status/**").permitAll()
                         .requestMatchers("/api/families/public/by-contact/**").permitAll()
                         .requestMatchers("/api/chatbot/public/ask").permitAll()
-                        .requestMatchers("/api/admin/forgot-password").permitAll() // <-- ADD THIS LINE
-                        .requestMatchers("/api/admin/reset-password").permitAll() // <-- ADD THIS LINE
+                        .requestMatchers("/api/admin/forgot-password").permitAll()
+                        .requestMatchers("/api/admin/reset-password").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
 
                         // All other requests require authentication
@@ -74,9 +74,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // THE FIX IS HERE: Replace the wildcard with your specific Netlify URL.
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://*.netlify.app"));
+                "https://fair-rice-portal.netlify.app"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
