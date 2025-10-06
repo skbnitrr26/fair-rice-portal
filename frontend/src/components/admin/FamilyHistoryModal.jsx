@@ -1,96 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import InputField from '../shared/InputField.jsx';
+import { Th, Td } from '../shared/TableComponents.jsx';
 import { API_BASE_URL } from '../../config.js';
 
-export default function ChangePasswordView({ token }) {
+export default function FamilyHistoryModal({ family, token, onClose }) {
     const { t } = useTranslation();
-    const [formData, setFormData] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
-    const [message, setMessage] = useState('');
+    const [history, setHistory] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
 
-    const handleChange = (e) => {
-        setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setMessage('');
-        setError('');
-
-        if (formData.newPassword !== formData.confirmPassword) {
-            setError(t('passwordMismatch'));
-            setIsLoading(false);
-            return;
+    useEffect(() => {
+        if (family?.id) {
+            const fetchHistory = async () => {
+                setIsLoading(true);
+                setError('');
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/families/admin/${family.id}/history`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (!res.ok) throw new Error('Could not fetch history.');
+                    setHistory(await res.json());
+                } catch (err) {
+                    console.error(err);
+                    setError(err.message);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+            fetchHistory();
         }
+    }, [family, token]);
 
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/admin/change-password`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(formData)
-            });
-
-            const responseText = await response.text();
-
-            if (!response.ok) {
-                // Use the error message from the backend if available
-                throw new Error(responseText || 'Failed to update password.');
-            }
-            
-            setMessage(t('passwordChangedSuccess'));
-            setFormData({ oldPassword: '', newPassword: '', confirmPassword: '' });
-
-        } catch (err) {
-            // Translate known error messages from the backend
-            if (err.message.includes("Incorrect old password")) {
-                setError(t('incorrectOldPassword'));
-            } else if (err.message.includes("New passwords do not match")) {
-                setError(t('passwordMismatch'));
-            } else {
-                setError(err.message);
-            }
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    if (!family) return null;
 
     return (
-        <div className="bg-gray-50 p-6 rounded-lg border max-w-lg mx-auto">
-            <h3 className="text-xl font-bold text-gray-700 mb-6 text-center">{t('changePasswordTitle')}</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <InputField 
-                    label={t('oldPassword')} 
-                    name="oldPassword" 
-                    type="password"
-                    value={formData.oldPassword} 
-                    onChange={handleChange} 
-                />
-                <InputField 
-                    label={t('newPassword')} 
-                    name="newPassword" 
-                    type="password"
-                    value={formData.newPassword} 
-                    onChange={handleChange} 
-                />
-                <InputField 
-                    label={t('confirmPassword')} 
-                    name="confirmPassword" 
-                    type="password"
-                    value={formData.confirmPassword} 
-                    onChange={handleChange} 
-                />
-                <button type="submit" disabled={isLoading} className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 disabled:bg-green-300">
-                    {isLoading ? t('submittingBtn') : t('updatePasswordBtn')}
-                </button>
-            </form>
-            {message && <div className="mt-4 text-center p-3 rounded-lg bg-green-100 text-green-800">{message}</div>}
-            {error && <div className="mt-4 text-center p-3 rounded-lg bg-red-100 text-red-800">{error}</div>}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-3xl max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center mb-4 flex-shrink-0">
+                    <h2 className="text-2xl font-bold text-gray-800">{t('historyFor', { name: family.familyHeadName })}</h2>
+                    <button onClick={onClose} className="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
+                </div>
+                {isLoading ? (
+                    <p>{t('loadingHistory')}</p>
+                ) : error ? (
+                    <p className="text-red-500">{error}</p>
+                ) : (
+                    <div className="overflow-y-auto">
+                        <table className="w-full table-auto border-collapse">
+                            <thead className="bg-gray-100">
+                                <tr>
+                                    <Th>{t('distributionDate')}</Th>
+                                    <Th>{t('entitlementKg')}</Th>
+                                    <Th>{t('riceReceived')}</Th>
+                                    <Th>{t('deficitKg')}</Th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y">
+                                {history.map(record => (
+                                    <tr key={record.id} className="hover:bg-gray-50">
+                                        <Td>{record.distributionDate}</Td>
+                                        <Td>{record.entitlementKg}</Td>
+                                        <Td>{record.riceReceivedKg}</Td>
+                                        <Td><span className={parseFloat(record.deficitKg) > 0 ? 'text-red-600 font-bold' : 'text-green-600'}>{record.deficitKg}</span></Td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        {history.length === 0 && <p className="text-center py-8">{t('noHistoryFound')}</p>}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
