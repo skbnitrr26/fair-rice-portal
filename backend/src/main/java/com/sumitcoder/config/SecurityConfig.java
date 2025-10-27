@@ -77,7 +77,8 @@ public class SecurityConfig {
         // THE FIX IS HERE: Replace the wildcard with your specific Netlify URL.
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://fair-rice-portal.netlify.app"
+                "https://fair-rice-portal.netlify.app",
+                "https://fair-rice-portal.vercel.app/"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
