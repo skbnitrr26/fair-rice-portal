@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import InputField from '../shared/InputField';
-import { API_BASE_URL } from '../../config'; // Import the central URL
+import InputField from '../shared/InputField.jsx';
+import { API_BASE_URL } from '../../config.js';
 
 const RICE_PER_PERSON_KG = 5;
 
@@ -22,7 +22,6 @@ const SubmissionSummary = ({ result, onClose }) => {
 
     return (
         <>
-            {/* Print-specific styles to hide other parts of the page */}
             <style jsx="true" global="true">{`
                 @media print {
                     body > #root > div {
